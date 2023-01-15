@@ -2,7 +2,7 @@
 --
 SELECT DATE_TRUNC(date(created_at), month) AS month
     ,COUNT(DISTINCT user_id) AS total_users 
-    ,COUNT(order_id) AS total_orders
+    ,COUNT(DISTINCT order_id) AS total_orders
     ,ROUND(SUM(sale_price)) AS total_sales
 FROM `bigquery-public-data.thelook_ecommerce.order_items` 
 WHERE created_at BETWEEN '2019-01-01' AND '2022-08-31'
@@ -15,6 +15,7 @@ ORDER BY 1 ;
 SELECT DATE_TRUNC(date(created_at), month) AS month
   ,ROUND(SUM(sale_price)/COUNT(DISTINCT order_id),2) AS price_per_order
   ,COUNT(DISTINCT user_id) AS unique_buyers
+  ,COUNT(DISTINCT order_id)/COUNT(DISTINCT user_id) AS frequencies
 FROM `bigquery-public-data.thelook_ecommerce.order_items` 
 WHERE created_at BETWEEN '2019-01-01' AND '2022-08-31'
   AND status = "Complete"
@@ -32,8 +33,7 @@ SELECT t1.id AS user_id
 FROM `bigquery-public-data.thelook_ecommerce.users` t1
 INNER JOIN `bigquery-public-data.thelook_ecommerce.orders` t2
   ON t1.id = t2.user_id
-WHERE t2.returned_at BETWEEN '2022-08-01'AND '2022-08-31'
-LIMIT 100 ;
+WHERE t2.returned_at BETWEEN '2022-08-01'AND '2022-08-31' ;
 
 --4. Get the top 5 least and most profitable product over all time
 --
@@ -99,4 +99,3 @@ SELECT order_date,categories,profit_categories
 FROM ct2_table
 WHERE order_date BETWEEN "2022-06-01" AND "2022-08-16"
       AND EXTRACT(DAY FROM order_date) = 15 ;
-
